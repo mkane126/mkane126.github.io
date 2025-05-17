@@ -1,0 +1,40 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    text-align: center;
+}
+
+button {
+    padding: 4px 6px;
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    background-color: #eee;
+    border: none;
+    cursor: pointer;
+}
+
+button.winner {
+    background-color: #c8f7c5;
+}
+
+button.loser {
+    background-color: #f7c5c5;
+}
+
+button.neutral {
+    background-color: #ddd;
+}
+
+.moneyline {
+    font-size: 0.8em;
+    color: #666;
+    display: block;
+}

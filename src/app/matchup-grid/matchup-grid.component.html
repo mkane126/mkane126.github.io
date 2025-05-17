@@ -1,0 +1,35 @@
+<table>
+    <thead>
+        <tr>
+            <th>Team</th>
+            <th *ngFor="let week of weeks">Week {{ week }}</th>
+            <th>W-L</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let team of teams">
+            <td>{{ team }}</td>
+
+            <td *ngFor="let week of weeks">
+                <ng-container *ngIf="getMatchup(week, team) as matchup">
+                    <button (click)="clickCell(matchup, team)" [ngClass]="{
+              winner: isWinner(matchup, team),
+              loser: isLoser(matchup, team),
+              neutral: !matchup.winner
+            }">
+                        <ng-container *ngIf="matchup.home === team">
+                            vs {{ stripCity(matchup.away) }}
+                            <span class="moneyline">({{ formatVegasOdds(matchup.homeMoneyline) }})</span>
+                        </ng-container>
+                        <ng-container *ngIf="matchup.away === team">
+                            @ {{ stripCity(matchup.home) }}
+                            <span class="moneyline">({{ formatVegasOdds(matchup.awayMoneyline) }})</span>
+                        </ng-container>
+                    </button>
+                </ng-container>
+            </td>
+
+            <td>{{ getTeamWins(team) }} - {{ getTeamLosses(team) }}</td>
+        </tr>
+    </tbody>
+</table>
