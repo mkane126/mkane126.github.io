@@ -17,15 +17,25 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 
 // 3️⃣ The Auth module (if you’re using AngularFireAuth)
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { NavbarComponent } from './navbar/navbar.component';
+import { RouterModule } from '@angular/router';
+import { MatchupGridPageComponent } from './matchup-grid-page/matchup-grid-page.component';
+import { HomePageComponent } from './home-page/home-page.component';
+import { AppRoutingModule } from './AppRoutingModule';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MatchupGridComponent
+    MatchupGridComponent,
+    NavbarComponent,
+    MatchupGridPageComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
+    RouterModule.forRoot([]),
     FormsModule,
+    AppRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,

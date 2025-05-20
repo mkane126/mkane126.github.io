@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthServiceService } from './auth-service.service';
+import 'firebase/compat/auth';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-root',
@@ -9,33 +11,41 @@ import { AuthServiceService } from './auth-service.service';
 export class AppComponent {
   title = 'nfl-predictions';
 
-  username = '';
   email = '';
   password = '';
   user$ = this.auth.user$;
+  showLogin = false;
 
-  constructor(public auth: AuthServiceService) { }
+  currentUser: firebase.User | null = null;
+
+  constructor(public auth: AuthServiceService) {
+    this.auth.user$.subscribe((u) => {
+      this.currentUser = u;
+    });
+  }
 
   signup() {
-    this.auth.signup(this.email, this.password, this.username)
+    this.auth.signup(this.email, this.password)
       .then(() => {
         this.clearForm();
+        this.showLogin = false;
       })
   }
   login() {
     this.auth.login(this.email, this.password)
       .then(() => {
         this.clearForm();
+        this.showLogin = false;
       })
   }
 
   logout() {
     this.auth.logout()
+    this.showLogin = true
   }
 
   private clearForm() {
     this.email = '';
     this.password = '';
-    this.username = '';
   }
 }

@@ -1,0 +1,20 @@
+<nav style="background: #eee; padding: 10px;">
+    <div class="navbar-container">
+        <a class="logo" routerLink="/">NFL Predictions</a>
+
+        <div class="nav-links">
+            <a routerLink="/matchup">Matchup Grid</a>
+        </div>
+
+        <div class="auth-section" *ngIf="!currentUser; else loggedInTemplate">
+            <button (click)="onLoginClick()">Login / Signup</button>
+        </div>
+
+        <ng-template #loggedInTemplate>
+            <div class="auth-section">
+                <span>Welcome, {{ currentUser?.email }}</span>
+                <button (click)="onSignOutClick()">Sign Out</button>
+            </div>
+        </ng-template>
+    </div>
+</nav>

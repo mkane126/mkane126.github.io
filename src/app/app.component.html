@@ -1,17 +1,15 @@
-<div *ngIf="user$ | async as user; else loginForm">
-    <p>Welcome, {{ user.displayName || user.email }}!</p>
-    <button (click)="logout()">Logout</button>
+<app-navbar [currentUser]="currentUser" (showLoginForm)="showLogin = true" (signOut)="logout()"></app-navbar>
+<router-outlet></router-outlet>
+
+<div *ngIf="showLogin" class="login-form">
+    <ng-container *ngTemplateOutlet="loginForm"></ng-container>
 </div>
 
 <ng-template #loginForm>
-    <input [(ngModel)]="username" placeholder="Username (for signup)" />
     <input [(ngModel)]="email" placeholder="Email" />
     <input [(ngModel)]="password" type="password" placeholder="Password" />
-    <br><br>
+    <br /><br />
     <button (click)="signup()">Sign Up</button>
     <button (click)="login()">Log In</button>
+    <button (click)="showLogin = false">Cancel</button>
 </ng-template>
-
-<h1>NFL Schedule Grid</h1>
-
-<app-matchup-grid></app-matchup-grid>

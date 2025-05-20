@@ -1,43 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
-import { BehaviorSubject } from 'rxjs';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { BehaviorSubject, Observable } from 'rxjs';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServiceService {
 
-  public userSubject = new BehaviorSubject<User | null>(null);
-  public user$ = this.userSubject.asObservable();
+  public userSubject = new BehaviorSubject<firebase.User | null>(null);
+  public user$: Observable<firebase.User | null> = this.userSubject.asObservable();
 
-  constructor(private auth: Auth, private firestore: Firestore) {
-    onAuthStateChanged(this.auth, (user) => {
-      this.userSubject.next(user);
+  constructor(private afAuth: AngularFireAuth) {
+    // Subscribe to Firebase auth changes
+    this.afAuth.authState.subscribe((user) => {
+      this.userSubject.next(user); // Updates app-wide user info
     });
   }
 
-  get currentUser(): User | null {
-    return this.userSubject.value;
-  }
-
-  signup(email: string, password: string, username: string) {
-    return createUserWithEmailAndPassword(this.auth, email, password).then(cred => {
-      const userRef = doc(this.firestore, `users/${cred.user.uid}`);
-      return setDoc(userRef, {
-        uid: cred.user.uid,
-        email: email,
-        username: username,
-        createdAt: new Date()
-      });
-    });
+  signup(email: string, password: string) {
+    return this.afAuth.createUserWithEmailAndPassword(email, password);
   }
 
   login(email: string, password: string) {
-    return signInWithEmailAndPassword(this.auth, email, password);
+    return this.afAuth.signInWithEmailAndPassword(email, password);
   }
 
   logout() {
-    return signOut(this.auth);
+    return this.afAuth.signOut();
+  }
+
+  // Optional helper to get latest user snapshot (non-observable)
+  get currentUser(): firebase.User | null {
+    return this.userSubject.value;
   }
 }
