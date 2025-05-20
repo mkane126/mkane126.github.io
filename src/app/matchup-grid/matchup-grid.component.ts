@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatchupService, Matchup } from '../matchup-service.service';
+import { DataServiceService, MatchupSelection } from '../data-service.service';
+import { AuthServiceService } from '../auth-service.service';
+import { switchMap, filter } from 'rxjs/operators';
+import { combineLatest, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-matchup-grid',
@@ -11,16 +15,38 @@ export class MatchupGridComponent implements OnInit {
   teams: string[] = [];
   weeks: number[] = [];
 
-  constructor(private matchupService: MatchupService) { }
+  constructor(private matchupService: MatchupService, private data: DataServiceService, private auth: AuthServiceService) { }
 
   ngOnInit(): void {
-    this.matchupService.loadMatchups().subscribe(data => {
-      this.matchupService.setMatchups(data);
-      this.matchups = this.matchupService.getMatchups();
 
-      this.teams = this.getUniqueTeams(this.matchups);
-      this.weeks = [...new Set(this.matchups.map(m => m.week))].sort((a, b) => a - b);
+    this.auth.user$.subscribe(user => {
+      if (!user) {
+        // still loading or not logged in yet—just bail out
+        return;
+      }
+
+      // from here on, `user` is definitely non-null
+      this.matchupService.loadMatchups().subscribe(matchups => {
+        this.matchups = matchups;
+        this.matchupService.setMatchups(matchups);
+        this.teams = this.getUniqueTeams(this.matchups);
+        this.weeks = [...new Set(this.matchups.map(m => m.week))].sort((a, b) => a - b);
+      });
+      this.data.loadSelections().subscribe(selections => {
+        selections.forEach((selection: MatchupSelection) => {
+          this.matchups = this.matchups.map(m =>
+            m.home == selection.homeTeam && m.away == selection.awayTeam
+              ? { ...m, ...selection }  // merged 
+              : m                      // unchanged
+          );
+        })
+      });
     });
+  }
+
+  add(homeTeam: string, awayTeam: string, winner: string) {
+    this.data.addItem({ username: this.auth.userSubject.getValue()?.email, homeTeam: homeTeam, awayTeam: awayTeam, winner: winner })
+      .then(docRef => console.log('Added with ID:', docRef.id));
   }
 
   getUniqueTeams(matchups: Matchup[]): string[] {
@@ -40,9 +66,11 @@ export class MatchupGridComponent implements OnInit {
     if (matchup.winner === team) {
       // If clicked the same winner again, unselect
       matchup.winner = undefined;
+      this.data.addOrUpdateItem(this.auth.userSubject.getValue()?.email + matchup.home + matchup.away, { username: this.auth.userSubject.getValue()?.email, homeTeam: matchup.home, awayTeam: matchup.away, winner: '' })
     } else {
       // Otherwise, select the clicked team as winner
       matchup.winner = team;
+      this.data.addOrUpdateItem(this.auth.userSubject.getValue()?.email + matchup.home + matchup.away, { username: this.auth.userSubject.getValue()?.email, homeTeam: matchup.home, awayTeam: matchup.away, winner: team })
     }
     this.matchupService.saveMatchup(matchup);
   }

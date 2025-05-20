@@ -1,3 +1,17 @@
-<h1>NFL Schedule Editor</h1>
+<div *ngIf="user$ | async as user; else loginForm">
+    <p>Welcome, {{ user.displayName || user.email }}!</p>
+    <button (click)="logout()">Logout</button>
+</div>
+
+<ng-template #loginForm>
+    <input [(ngModel)]="username" placeholder="Username (for signup)" />
+    <input [(ngModel)]="email" placeholder="Email" />
+    <input [(ngModel)]="password" type="password" placeholder="Password" />
+    <br><br>
+    <button (click)="signup()">Sign Up</button>
+    <button (click)="login()">Log In</button>
+</ng-template>
+
+<h1>NFL Schedule Grid</h1>
 
 <app-matchup-grid></app-matchup-grid>
