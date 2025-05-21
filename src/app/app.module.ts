@@ -5,10 +5,7 @@ import { AppComponent } from './app.component';
 import { MatchupGridComponent } from './matchup-grid/matchup-grid.component';
 import { MatchupService } from './matchup-service.service';
 import { HttpClientModule } from '@angular/common/http';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { environment } from '../environments/environment';
+import { environment } from '../environments/environment'
 // 1️⃣ Core compat module, initialized with your config
 import { AngularFireModule } from '@angular/fire/compat';
 
@@ -40,9 +37,6 @@ import { AppRoutingModule } from './AppRoutingModule';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
   ],
   providers: [MatchupService],
   bootstrap: [AppComponent]

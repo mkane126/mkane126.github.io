@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, where, addDoc, setDoc, doc, getDoc, query as firestoreQuery } from '@angular/fire/firestore';
+import { collection, collectionData, where, addDoc, setDoc, doc, getDoc, query as firestoreQuery } from '@angular/fire/firestore';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthServiceService } from './auth-service.service';
 import { Observable } from 'rxjs';
@@ -16,29 +16,24 @@ export interface MatchupSelection {
 })
 export class DataServiceService {
 
-  constructor(private firestore: Firestore, private auth: AuthServiceService, private afs: AngularFirestore) { }
+  constructor(private firestore: AngularFirestore, private auth: AuthServiceService, private afs: AngularFirestore) { }
 
   // Add new document with auto ID
   addItem(data: any) {
-    const itemsRef = collection(this.firestore, 'match-selections');
-    return addDoc(itemsRef, data);
+    return this.firestore.collection('match-selections').add(data);
   }
 
   addOrUpdateItem(id: string, data: any) {
-    const itemRef = doc(this.firestore, 'match-selections', id);
-    return setDoc(itemRef, data, { merge: true });
+    return this.firestore.collection('match-selections').doc(id).set(data, { merge: true });
   }
 
   // Set document with custom ID
   setItem(id: string, data: any) {
-    const itemRef = doc(this.firestore, 'items', id);
-    return setDoc(itemRef, data);
+    return this.firestore.collection('items').doc(id).set(data);
   }
-
   // Get document by ID
   getItem(id: string) {
-    const itemRef = doc(this.firestore, 'items', id);
-    return getDoc(itemRef);
+    return this.firestore.collection('items').doc(id).get();
   }
 
   loadSelections(): Observable<MatchupSelection[]> {
