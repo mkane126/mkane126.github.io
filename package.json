@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "predeploy": "ng build --configuration production",
-    "deploy": "ng build --base-href / && gh-pages -d dist/nfl-predictions --dotfiles --no-history"
+    "deploy": "ng build --base-href /nfl-predictions/ && gh-pages -d dist/nfl-predictions --dotfiles --no-history"
   },
   "private": true,
   "dependencies": {
